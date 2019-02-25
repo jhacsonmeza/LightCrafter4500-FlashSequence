@@ -1,7 +1,6 @@
 // LightCrafter4500Flash.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
-//#include "pch.h"
 
 #include "dlpc350_common.h"
 #include "dlpc350_usb.h"
@@ -27,13 +26,14 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Connect to device: lcrOpen
 	DLPC350_USB_Init();
-	if (DLPC350_USB_IsConnected()) {
+	if (DLPC350_USB_IsConnected())
 		DLPC350_USB_Close();
-	}
 
 	DLPC350_USB_Open();
-	if (!DLPC350_USB_IsConnected()) {
+	if (!DLPC350_USB_IsConnected()) 
+	{
 		printf("Failed to open");
+		return -1;
 	}
 
 	unsigned int NumImgInFlash;
@@ -68,7 +68,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			break;
 
 		case _T('r'):
-			repeat = _wtoi(optarg);;
+			repeat = _wtoi(optarg);
 			break;
 
 		case _T('s'):
@@ -77,7 +77,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 			numImFlash = str.length(); // Number of image in the sequence
 
-			for (int i = 0; i < str.length(); i++) {
+			for (int i = 0; i < str.length(); i++)
+			{
 				if (NumImgInFlash - 1 < str[i] - '0')
 				{
 					printf("Image index error");
@@ -97,22 +98,28 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool mode = true; // true Pattern display mode, false Video display mode
 
 	int result = DLPC350_SetMode(mode);
-	if (result == -1) {
+	if (result == -1) 
+	{
 		printf("Failed to set mode");
+		return -1;
 	}
 
 	// Stop the current pattern sequence: lcrPatternDisplay
 	int action = 0; // 0 stop, 1 pause, 2 start
 
 	result = DLPC350_PatternDisplay(action);
-	if (result < 0) {
+	if (result < 0)
+	{
 		printf("Failed to set pattern display");
+		return -1;
 	}
 
 	// Clear locally stored pattern LUT: lcrClearPatLut
 	result = DLPC350_ClearPatLut();
-	if (result == -1) {
+	if (result == -1)
+	{
 		printf("Failed to clear stored pattern LUT");
+		return -1;
 	}
 
 	// Set up pattern LUT: lcrAddToPatLut
@@ -126,16 +133,19 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool bufSwap = false; // true perform a buffer swap, false do not do it
 	bool trigOutPrev = false;
 
-	for (int i = 0; i < numImFlash; i++) {
-		for (int j = 0; j < bitPlaneGroups; j++) {
-			if (j == 0) {
+	for (int i = 0; i < numImFlash; i++)
+	{
+		for (int j = 0; j < bitPlaneGroups; j++)
+		{
+			if (j == 0)
 				result = DLPC350_AddToPatLut(trigType, patNum[j], bitDepth, ledSelect, invertPat, insertBlack, !bufSwap, trigOutPrev);
-			}
-			else {
+			else 
 				result = DLPC350_AddToPatLut(trigType, patNum[j], bitDepth, ledSelect, invertPat, insertBlack, bufSwap, trigOutPrev);
-			}
-			if (result == -1) {
+
+			if (result == -1) 
+			{
 				printf("Failed to add to pattern LUT");
+				return -1;
 			}
 		}
 	}
@@ -144,8 +154,10 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool external = false; // true patterns from RGB/FPD-link interface, false pattern from flash memory
 
 	result = DLPC350_SetPatternDisplayMode(external);
-	if (result == -1) {
+	if (result == -1)
+	{
 		printf("Failed to set pattern display mode");
+		return -1;
 	}
 
 	// Set the sequence parameters: lcrSetPatternConfig
@@ -164,43 +176,55 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	// Set exposure time: lcrSetExposureFramePeriod
 	result = DLPC350_SetExposure_FramePeriod(exposurePeriod, framePeriod);
-	if (result < 0) {
+	if (result < 0)
+	{
 		printf("Failed to set exposure/frame period");
+		return -1;
 	}
 
 	// Set the pattern sequence to trigger: lcrSetPatternTriggerMode
 	int intExtOrVsync = 1; // 0 VSYNC, 1 internal or external
 
 	result = DLPC350_SetPatternTriggerMode(intExtOrVsync);
-	if (result < 0) {
+	if (result < 0)
+	{
 		printf("Failed to set pattern trigger mode");
+		return -1;
 	}
 
 	// Send pattern LUT to device: lcrSendPatLut
 	result = DLPC350_SendPatLut();
-	if (result < 0) {
+	if (result < 0)
+	{
 		printf("Failed to send pattern LUT");
+		return -1;
 	}
 
 	// Send image LUT to device: lcrSendImageLut_2images
 	result = DLPC350_SendImageLut(&splashLut[0], numImFlash);
-	if (result < 0) {
+	if (result < 0)
+	{
 		printf("Failed to send image LUT");
+		return -1;
 	}
 
 	// Validate the pattern LUT: lcrValidatePatLutData
 	unsigned int status;
 
 	result = DLPC350_ValidatePatLutData(&status);
-	if (result == -1) {
+	if (result == -1)
+	{
 		printf("Failed to validate pattern LUT data");
+		return -1;
 	}
 
 	// Start the pattern sequence: lcrPatternDisplay
 	action = 2; // 0 stop, 1 pause, 2 start
 	result = DLPC350_PatternDisplay(action);
-	if (result < 0) {
+	if (result < 0)
+	{
 		printf("Failed to set pattern display");
+		return -1;
 	}
 
 	return 0;

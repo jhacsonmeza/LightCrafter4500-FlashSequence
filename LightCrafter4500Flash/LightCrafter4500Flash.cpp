@@ -18,13 +18,15 @@ using namespace std;
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	unsigned char splashLut[64];
-	unsigned int exposurePeriod;
-	unsigned int framePeriod;
-	int numFlashImSeq;
-	int repeat;
+	unsigned char splashLut[64]; // Array where LUT entries to be sent are stored
+	unsigned int exposurePeriod; // Exposure time in microseconds
+	unsigned int framePeriod; // Frame period in microseconds
+	int numFlashImSeq; // Number of flash images in the sequence
+	int repeat; // Repeat infinitely a sequence or not
 
-	// Connect to device: lcrOpen
+
+
+	// Connect to device
 	DLPC350_USB_Init();
 	if (DLPC350_USB_IsConnected())
 		DLPC350_USB_Close();
@@ -36,11 +38,18 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
+
+
+	// Get the total number of images stored in flash memory
 	unsigned int NumImgInFlash;
 	DLPC350_GetNumImagesInFlash(&NumImgInFlash);
 
+
+
+	// Parse command-line options
 	while (1)
 	{
+		// Set the options
 		static struct option long_options[] = {
 			{_T("PatternExposure"), ARG_REQ, 0, _T('e')},
 			{_T("PatternPeriod"), ARG_REQ, 0, _T('p')},
@@ -75,17 +84,17 @@ int _tmain(int argc, _TCHAR* argv[])
 			const wstring ws(optarg);
 			const string str(ws.begin(), ws.end());
 
-			numFlashImSeq = str.length(); // Number of image in the sequence
+			numFlashImSeq = str.length(); // Get number of images in the given sequence
 
 			for (int i = 0; i < str.length(); i++)
 			{
-				if (NumImgInFlash - 1 < str[i] - '0')
+				if (NumImgInFlash - 1 < str[i] - '0') // Check if image index is not larger than maximum index
 				{
 					printf("Image index error");
 					return -1;
 				}
 
-				splashLut[i] = str[i] - '0';
+				splashLut[i] = str[i] - '0'; // Build array with LUT sequence
 			}
 
 			break;
@@ -94,8 +103,8 @@ int _tmain(int argc, _TCHAR* argv[])
 
 
 
-	// Set display mode: lcrSetMode
-	bool mode = true; // true Pattern display mode, false Video display mode
+	// Set display mode
+	bool mode = true; // true: Pattern display mode, false: Video display mode
 
 	int result = DLPC350_SetMode(mode);
 	if (result == -1) 
@@ -104,7 +113,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Stop the current pattern sequence: lcrPatternDisplay
+
+
+	// Stop the current pattern sequence
 	int action = 0; // 0 stop, 1 pause, 2 start
 
 	result = DLPC350_PatternDisplay(action);
@@ -114,7 +125,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Clear locally stored pattern LUT: lcrClearPatLut
+
+
+	// Clear locally stored pattern LUT
 	result = DLPC350_ClearPatLut();
 	if (result == -1)
 	{
@@ -122,20 +135,24 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Set up pattern LUT: lcrAddToPatLut
-	int trigType = 0; // 0 internal, 1 external +, 2 external -, 3 no input trigger
-	int bitPlaneGroups = 3; // 3 groups for 8 bit images
-	int patNum[] = { 0, 1, 2 }; // Index of the 3 groups of 8 bit
-	int bitDepth = 8; //from 0 to 8
+
+
+	// Set up pattern LUT
+	int trigType = 0; // 0 internal, 1 external positive, 2 external negative, 3 no input trigger
+	int bitDepth = 8; // from 1 to 8
+	int bitplaneGroups = 3; // Number of bitplane groups, for 8-bit depth there are 3 patterns to stream
+	int patNum[] = {0, 1, 2}; // Index of the 3 bitplane groups (patterns) with 8 bitplanes each one
 	int ledSelect = 7; // 0 no led, 1 red, 2 green, 3 yellow, 4 blue, 5 magenta, 6 cyan, 7 white
-	bool invertPat = false; // true invert pattern, false do not invert pattern
-	bool insertBlack = false; // true insert black-fill pattern, false do not do it
-	bool bufSwap = false; // true perform a buffer swap, false do not do it
-	bool trigOutPrev = false;
+	bool invertPat = false; // true: invert pattern, false: do not invert pattern
+	bool insertBlack = false; // true: insert black-fill pattern, false: do not do it
+	bool bufSwap = false; // true: perform a buffer swap, false: do not do it
+	bool trigOutPrev = false; // true: Trigger Out 1 will continue to be high.
+							  // false: Trigger Out 1 has a rising edge at the start of a pattern, 
+							  // and a falling edge at the end of the pattern
 
 	for (int i = 0; i < numFlashImSeq; i++)
 	{
-		for (int j = 0; j < bitPlaneGroups; j++)
+		for (int j = 0; j < bitplaneGroups; j++)
 		{
 			if (j == 0)
 				result = DLPC350_AddToPatLut(trigType, patNum[j], bitDepth, ledSelect, invertPat, insertBlack, !bufSwap, trigOutPrev);
@@ -150,8 +167,10 @@ int _tmain(int argc, _TCHAR* argv[])
 		}
 	}
 
-	// Set pattern display data source: lcrSetPatternDisplayMode
-	bool external = false; // true patterns from RGB/FPD-link interface, false pattern from flash memory
+
+
+	// Set pattern display data source
+	bool external = false; // true: patterns from RGB/FPD-link interface, false: patterns from flash memory
 
 	result = DLPC350_SetPatternDisplayMode(external);
 	if (result == -1)
@@ -160,21 +179,25 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Set the sequence parameters: lcrSetPatternConfig
-	unsigned int numPatsForTrigOut2;
+
+
+	// Set the sequence parameters
+	unsigned int numPatsForTrigOut2; // Number of patterns to display
 
 	if (repeat)
-		numPatsForTrigOut2 = 1;
+		numPatsForTrigOut2 = 1; // If repeat, variable must be set to 1
 	else
-		numPatsForTrigOut2 = numFlashImSeq * bitPlaneGroups;
+		numPatsForTrigOut2 = numFlashImSeq*bitplaneGroups; // If not repeat, variable must be number of LUT patterns
 
-	if (DLPC350_SetPatternConfig(numFlashImSeq*bitPlaneGroups, repeat, numPatsForTrigOut2, numFlashImSeq) < 0)
+	if (DLPC350_SetPatternConfig(numFlashImSeq*bitplaneGroups, repeat, numPatsForTrigOut2, numFlashImSeq) < 0)
 	{
 		printf("Failed to set pattern configuration");
 		return -1;
 	}
 
-	// Set exposure time: lcrSetExposureFramePeriod
+
+
+	// Set exposure time and frame period
 	result = DLPC350_SetExposure_FramePeriod(exposurePeriod, framePeriod);
 	if (result < 0)
 	{
@@ -182,7 +205,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Set the pattern sequence to trigger: lcrSetPatternTriggerMode
+
+
+	// Set the pattern trigger mode
 	int trigMode = 1; // 0 VSYNC serves to trigger the pattern display sequence
 					  // 1 Internally or Externally (through TRIG_IN1 and TRIG_IN2) generated trigger
 					  // 2 TRIG_IN_1 alternates between two patterns,while TRIG_IN_2 advances to the next pair of patterns
@@ -196,7 +221,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Send pattern LUT to device: lcrSendPatLut
+
+
+	// Send pattern LUT to device
 	result = DLPC350_SendPatLut();
 	if (result < 0)
 	{
@@ -204,7 +231,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Send image LUT to device: lcrSendImageLut_2images
+
+
+	// Send image LUT to device
 	result = DLPC350_SendImageLut(&splashLut[0], numFlashImSeq);
 	if (result < 0)
 	{
@@ -212,7 +241,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Validate the pattern LUT: lcrValidatePatLutData
+
+
+	// Validate the pattern LUT
 	unsigned int status;
 
 	result = DLPC350_ValidatePatLutData(&status);
@@ -222,7 +253,9 @@ int _tmain(int argc, _TCHAR* argv[])
 		return -1;
 	}
 
-	// Start the pattern sequence: lcrPatternDisplay
+
+
+	// Start the pattern sequence
 	action = 2; // 0 stop, 1 pause, 2 start
 	result = DLPC350_PatternDisplay(action);
 	if (result < 0)

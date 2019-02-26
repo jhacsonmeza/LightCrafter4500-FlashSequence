@@ -21,7 +21,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	unsigned char splashLut[64];
 	unsigned int exposurePeriod;
 	unsigned int framePeriod;
-	int numImFlash;
+	int numFlashImSeq;
 	int repeat;
 
 	// Connect to device: lcrOpen
@@ -75,7 +75,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			const wstring ws(optarg);
 			const string str(ws.begin(), ws.end());
 
-			numImFlash = str.length(); // Number of image in the sequence
+			numFlashImSeq = str.length(); // Number of image in the sequence
 
 			for (int i = 0; i < str.length(); i++)
 			{
@@ -133,7 +133,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	bool bufSwap = false; // true perform a buffer swap, false do not do it
 	bool trigOutPrev = false;
 
-	for (int i = 0; i < numImFlash; i++)
+	for (int i = 0; i < numFlashImSeq; i++)
 	{
 		for (int j = 0; j < bitPlaneGroups; j++)
 		{
@@ -166,9 +166,9 @@ int _tmain(int argc, _TCHAR* argv[])
 	if (repeat)
 		numPatsForTrigOut2 = 1;
 	else
-		numPatsForTrigOut2 = numImFlash * bitPlaneGroups;
+		numPatsForTrigOut2 = numFlashImSeq * bitPlaneGroups;
 
-	if (DLPC350_SetPatternConfig(numImFlash*bitPlaneGroups, repeat, numPatsForTrigOut2, numImFlash) < 0)
+	if (DLPC350_SetPatternConfig(numFlashImSeq*bitPlaneGroups, repeat, numPatsForTrigOut2, numFlashImSeq) < 0)
 	{
 		printf("Failed to set pattern configuration");
 		return -1;
@@ -201,7 +201,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// Send image LUT to device: lcrSendImageLut_2images
-	result = DLPC350_SendImageLut(&splashLut[0], numImFlash);
+	result = DLPC350_SendImageLut(&splashLut[0], numFlashImSeq);
 	if (result < 0)
 	{
 		printf("Failed to send image LUT");

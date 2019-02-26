@@ -183,9 +183,13 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	// Set the pattern sequence to trigger: lcrSetPatternTriggerMode
-	int intExtOrVsync = 1; // 0 VSYNC, 1 internal or external
+	int trigMode = 1; // 0 VSYNC serves to trigger the pattern display sequence
+					  // 1 Internally or Externally (through TRIG_IN1 and TRIG_IN2) generated trigger
+					  // 2 TRIG_IN_1 alternates between two patterns,while TRIG_IN_2 advances to the next pair of patterns
+					  // 3 Internally or externally generated trigger for Variable Exposure display sequence
+					  // 4 VSYNC triggered for Variable Exposure display sequence
 
-	result = DLPC350_SetPatternTriggerMode(intExtOrVsync);
+	result = DLPC350_SetPatternTriggerMode(trigMode);
 	if (result < 0)
 	{
 		printf("Failed to set pattern trigger mode");

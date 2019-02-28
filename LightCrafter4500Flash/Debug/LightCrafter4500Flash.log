@@ -1,5 +1,5 @@
 ﻿  LightCrafter4500Flash.cpp
   Importing getopt library
-f:\lightcrafter4500flash\lightcrafter4500flash\lightcrafter4500flash.cpp(80): warning C4018: '<': signed/unsigned mismatch
-f:\lightcrafter4500flash\lightcrafter4500flash\lightcrafter4500flash.cpp(82): warning C4018: '<': signed/unsigned mismatch
+f:\lightcrafter4500flash\lightcrafter4500flash\lightcrafter4500flash.cpp(89): warning C4018: '<': signed/unsigned mismatch
+f:\lightcrafter4500flash\lightcrafter4500flash\lightcrafter4500flash.cpp(91): warning C4018: '<': signed/unsigned mismatch
   LightCrafter4500Flash.vcxproj -> F:\LightCrafter4500Flash\Debug\LightCrafter4500Flash.exe

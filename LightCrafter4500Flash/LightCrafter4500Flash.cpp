@@ -6,9 +6,9 @@
 #include "dlpc350_usb.h"
 #include "dlpc350_api.h"
 
-#include <iostream>
 #include "getopt.h"
 
+#include <iostream>
 #include <stdio.h>
 #include <tchar.h>
 

@@ -16,10 +16,10 @@ DLP LightCrafter 4500 command line utility for creating pattern sequences with i
 
 ## Usage
 
-There four principal parse options: `PatternExposure`, `PatternPeriod`, `Repeat`, and `Sequence`. `PatternExposure` and `PatternPeriod` define the exposure time and frame period in microseconds (μs), respectively. Minimum value that both can take is 8333 μs for the case of 8-bit depth images (for more information about minimum pattern exposure see [User's Guide](http://www.ti.com/lit/ug/dlpu011f/dlpu011f.pdf) page 45). `Repeat` defines if pattern sequences are repeated indefinitely (set to 1) or not (set to 0). `Sequence` defines the sequence of flash images by providing the index of images without spaces, e.g., 012 represent the sequence of image 0, image 1 and image 2.
+There are four principal parse options: `PatternExposure`, `PatternPeriod`, `Repeat`, and `Sequence`. `PatternExposure` and `PatternPeriod` define the exposure time and frame period in microseconds (μs), respectively. Minimum value that both can take is 8333 μs for the case of 8-bit depth images (for more information about minimum pattern exposure see [User's Guide](http://www.ti.com/lit/ug/dlpu011f/dlpu011f.pdf) page 45). `Repeat` defines if pattern sequences are repeated indefinitely (set to 1) or not (set to 0). `Sequence` defines the sequence of flash images by providing the index of images separated by '-', e.g., 0-1-2 represent the sequence of image 0, image 1 and image 2.
 
  
 
 Run example:
 
-	LightCrafter4500Flash --PatternExposure 600000 --PatternPeriod 600000 --Repeat 0 --Sequence 0102
+	LightCrafter4500Flash --PatternExposure 300000 --PatternPeriod 300000 --Repeat 0 --Sequence 0-1-0-2

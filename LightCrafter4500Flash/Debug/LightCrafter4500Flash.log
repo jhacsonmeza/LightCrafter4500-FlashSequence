@@ -1,5 +1,7 @@
 ﻿  LightCrafter4500Flash.cpp
   Importing getopt library
-f:\lightcrafter4500flash\lightcrafter4500flash\lightcrafter4500flash.cpp(89): warning C4018: '<': signed/unsigned mismatch
-f:\lightcrafter4500flash\lightcrafter4500flash\lightcrafter4500flash.cpp(91): warning C4018: '<': signed/unsigned mismatch
+f:\lightcrafter4500flash\lightcrafter4500flash\lightcrafter4500flash.cpp(94): warning C4018: '<': signed/unsigned mismatch
+     Creating library F:\LightCrafter4500Flash\Debug\LightCrafter4500Flash.lib and object F:\LightCrafter4500Flash\Debug\LightCrafter4500Flash.exp
+LightCrafter4500Flash.obj : warning LNK4217: locally defined symbol _getopt_long_w imported in function _wmain
+LightCrafter4500Flash.obj : warning LNK4049: locally defined symbol _optarg_w imported
   LightCrafter4500Flash.vcxproj -> F:\LightCrafter4500Flash\Debug\LightCrafter4500Flash.exe

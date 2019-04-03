@@ -11,6 +11,7 @@
 #include <iostream>
 #include <stdio.h>
 #include <tchar.h>
+#include <sstream>
 
 
 using namespace std;
@@ -84,17 +85,19 @@ int _tmain(int argc, _TCHAR* argv[])
 			const wstring ws(optarg);
 			const string str(ws.begin(), ws.end());
 
-			numFlashImSeq = str.length(); // Get number of images in the given sequence
+			istringstream fstr(str);
+			string s;
+			numFlashImSeq = 0; // Get number of images in the given sequence
 
-			for (int i = 0; i < str.length(); i++)
+			while (getline(fstr, s, '-'))
 			{
-				if (NumImgInFlash - 1 < str[i] - '0') // Check if image index is not larger than maximum index
+				if (NumImgInFlash - 1 < stoi(s))
 				{
 					printf("Image index error");
 					return -1;
 				}
 
-				splashLut[i] = str[i] - '0'; // Build array with LUT sequence
+				splashLut[numFlashImSeq++] = stoi(s);
 			}
 
 			break;
